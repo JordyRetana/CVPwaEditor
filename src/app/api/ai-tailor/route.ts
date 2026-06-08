@@ -18,19 +18,12 @@ const requestSchema = z.object({
     education: z.array(z.any()),
     skills: z.array(z.any())
   }),
-  jobDescription: z.string().min(120, "Pega una descripcion de empleo mas completa."),
-  licenseActive: z.boolean()
+  jobDescription: z.string().min(120, "Pega una descripcion de empleo mas completa.")
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = requestSchema.parse(await request.json());
-    if (!body.licenseActive) {
-      return NextResponse.json(
-        { error: "La IA es una funcion premium. Activa una licencia para usarla." },
-        { status: 403 }
-      );
-    }
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {

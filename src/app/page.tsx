@@ -11,11 +11,9 @@ import {
   sectionCount,
   starterResume
 } from "@/lib/resume";
-import { getDeviceHash, loadState, saveState } from "@/lib/storage";
+import { loadState, saveState } from "@/lib/storage";
 
 type Tab = "home" | "edit" | "ai" | "preview";
-
-const purchaseMessage = "Para comprar o renovar licencia: +506 8713-8971 / jretanamendez@gmail.com";
 
 export default function Home() {
   const [state, setState] = useState<AppState>(initialState);
@@ -48,45 +46,7 @@ export default function Home() {
     }));
   }
 
-  async function activateLicense() {
-    if (!state.license.key.trim()) {
-      setStatus("Escribe la clave de licencia.");
-      return;
-    }
-
-    setBusy(true);
-    setStatus("Validando licencia...");
-    try {
-      const deviceHash = await getDeviceHash();
-      const response = await fetch("/api/license", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ licenseKey: state.license.key.trim(), deviceHash })
-      });
-      const data = (await response.json()) as { active: boolean; message: string; expiresAt?: string | null };
-      setState((current) => ({
-        ...current,
-        license: {
-          ...current.license,
-          active: data.active,
-          message: data.message,
-          expiresAt: data.expiresAt
-        }
-      }));
-      setStatus(data.message);
-    } catch {
-      setStatus("No se pudo contactar el servidor de licencias.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
   async function generateAi() {
-    if (!state.license.active) {
-      setStatus(`La IA es premium. ${purchaseMessage}`);
-      return;
-    }
-
     if (jobDescription.trim().length < 120) {
       setStatus("Pega una descripcion de empleo mas completa para que la IA no responda corto.");
       return;
@@ -100,8 +60,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           resume: state.resume,
-          jobDescription,
-          licenseActive: state.license.active
+          jobDescription
         })
       });
       const data = (await response.json()) as { result?: AiTailorResult; error?: string };
@@ -136,7 +95,7 @@ export default function Home() {
           <p className="eyebrow">PWA para iPhone</p>
           <h1>CV Editor IA</h1>
           <p className="hero-copy">
-            Edita tu CV desde el telefono, activa funciones premium y ajusta el contenido a cada empleo con IA.
+            Edita tu CV desde el telefono y ajusta el contenido a cada empleo con IA.
           </p>
         </div>
         <button
@@ -169,8 +128,8 @@ export default function Home() {
             <h2>Estado</h2>
             <div className="metric-grid">
               <div>
-                <span>Licencia</span>
-                <strong>{state.license.active ? "Premium activa" : "Sin activar"}</strong>
+                <span>IA</span>
+                <strong>Disponible</strong>
               </div>
               <div>
                 <span>Proyectos</span>
@@ -181,28 +140,6 @@ export default function Home() {
                 <strong>{counts.skills}</strong>
               </div>
             </div>
-          </div>
-
-          <div className="card">
-            <h2>Activar IA premium</h2>
-            <p>{purchaseMessage}</p>
-            <label>
-              Clave de licencia
-              <input
-                value={state.license.key}
-                onChange={(event) =>
-                  setState((current) => ({
-                    ...current,
-                    license: { ...current.license, key: event.target.value.toUpperCase() }
-                  }))
-                }
-                placeholder="CVE-XXXX-XXXX-XXXX-XXXXX"
-              />
-            </label>
-            <button disabled={busy} onClick={activateLicense}>
-              Activar licencia
-            </button>
-            <p className="status">{state.license.message}</p>
           </div>
 
           <div className="card">
@@ -311,7 +248,6 @@ export default function Home() {
               Pega el texto completo del empleo. La IA va a escribir un resumen mas robusto, proyectos con bullets
               completos y habilidades optimizadas para ATS.
             </p>
-            {!state.license.active && <div className="locked">Funcion premium bloqueada. {purchaseMessage}</div>}
             <textarea
               value={jobDescription}
               onChange={(event) => setJobDescription(event.target.value)}
