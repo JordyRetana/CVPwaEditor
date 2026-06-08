@@ -124,10 +124,9 @@ function normalizeLooseResult(result: unknown, resume: ResumeData): AiTailorResu
   const professionalSummary = expandSummary(data.professionalSummary || fallbackSummary);
   const sourceProjects = data.projects?.length ? data.projects : resume.projects;
   const projects = sourceProjects.slice(0, 5).map((project, index) => {
-    const details =
-      "details" in project && Array.isArray(project.details)
-        ? project.details
-        : resume.projects[index]?.details.map((detail) => detail.value) ?? [];
+    const details = Array.isArray(project.details)
+      ? project.details.map((detail) => (typeof detail === "string" ? detail : detail.value))
+      : resume.projects[index]?.details.map((detail) => detail.value) ?? [];
 
     return {
       title: (project.title || resume.projects[index]?.title || `Proyecto ${index + 1}`).trim(),
