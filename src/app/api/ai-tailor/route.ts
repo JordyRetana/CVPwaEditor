@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = requestSchema.parse(await request.json());
 
-    const apiKey = process.env.GROQ_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY?.replace(/^\uFEFF/, "").trim();
     if (!apiKey) {
       return NextResponse.json(
         { error: "GROQ_API_KEY no esta configurada en el servidor." },
