@@ -12,11 +12,10 @@ export function loadState(): AppState {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return initialState;
     const parsed = JSON.parse(raw) as AppState;
-    return {
+      return {
       ...initialState,
       ...parsed,
       resume: normalizeResume(parsed.resume),
-      license: { ...initialState.license, ...parsed.license },
       theme: parsed.theme === "light" ? "light" : "dark"
     };
   } catch {

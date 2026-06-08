@@ -15,13 +15,12 @@ Abre `http://localhost:3000`.
 ## Variables de entorno
 
 - `GROQ_API_KEY`: clave privada de Groq. Debe vivir en Vercel/hosting, nunca en el navegador.
-- `LICENSE_API_BASE_URL`: API de licencias existente. Por defecto usa Render.
 
 ## Deploy gratis recomendado
 
 1. Sube este repo a GitHub.
 2. En Vercel, crea un proyecto nuevo desde el repo.
-3. En Environment Variables agrega `GROQ_API_KEY` y `LICENSE_API_BASE_URL`.
+3. En Environment Variables agrega `GROQ_API_KEY`.
 4. Deploy.
 5. En iPhone abre la URL en Safari, toca compartir y usa `Agregar a pantalla de inicio`.
 

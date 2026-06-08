@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "CV PWA Editor",
-  description: "Editor movil de CV con IA premium y vista ATS friendly.",
+  description: "Editor movil de CV con IA y vista ATS friendly.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,

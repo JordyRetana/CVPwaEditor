@@ -39,16 +39,8 @@ export type ResumeData = {
   skills: TextLine[];
 };
 
-export type LicenseState = {
-  active: boolean;
-  key: string;
-  message: string;
-  expiresAt?: string | null;
-};
-
 export type AppState = {
   resume: ResumeData;
-  license: LicenseState;
   theme: "dark" | "light";
 };
 
@@ -76,11 +68,6 @@ export const emptyResume: ResumeData = {
 
 export const initialState: AppState = {
   resume: emptyResume,
-  license: {
-    active: false,
-    key: "",
-    message: "Activa una licencia para usar la IA."
-  },
   theme: "dark"
 };
 
@@ -113,7 +100,7 @@ export const starterResume: ResumeData = {
       location: "Proyecto personal",
       details: [
         { value: "Construccion de una aplicacion para importar, editar y exportar curriculums con formato profesional y ATS friendly." },
-        { value: "Implementacion de licencias, instaladores, actualizaciones y panel administrativo para manejar clientes." },
+        { value: "Implementacion de instaladores, actualizaciones, exportacion PDF y panel administrativo para manejar entregas a clientes." },
         { value: "Integracion de servicios externos y persistencia local para mejorar la experiencia del usuario final." }
       ]
     }

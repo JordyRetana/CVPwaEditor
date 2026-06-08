@@ -242,7 +242,7 @@ export default function Home() {
 
       {tab === "ai" && (
         <section className="stack">
-          <div className="card premium-card">
+          <div className="card ai-card">
             <h2>Ajustar con IA</h2>
             <p>
               Pega el texto completo del empleo. La IA va a escribir un resumen mas robusto, proyectos con bullets
