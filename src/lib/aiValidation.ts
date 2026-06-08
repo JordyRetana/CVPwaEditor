@@ -4,13 +4,13 @@ export const aiProjectSchema = z.object({
   title: z.string().min(2),
   role: z.string().min(2),
   location: z.string().default(""),
-  details: z.array(z.string().min(20)).min(4).max(6)
+  details: z.array(z.string().min(20)).min(3).max(7)
 });
 
 export const aiResultSchema = z.object({
-  professionalSummary: z.string().min(420).max(900),
-  projects: z.array(aiProjectSchema).min(2).max(5),
-  skills: z.array(z.string().min(8)).min(14).max(28),
+  professionalSummary: z.string().min(280).max(1000),
+  projects: z.array(aiProjectSchema).min(1).max(5),
+  skills: z.array(z.string().min(8)).min(10).max(28),
   keywordStrategy: z.array(z.string()).min(5).max(14),
   recruiterNotes: z.array(z.string()).min(3).max(8)
 });
