@@ -66,6 +66,22 @@ button:disabled {
   opacity: 0.55;
 }
 
+.file-picker {
+  display: inline-grid;
+  width: 100%;
+  min-height: 48px;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 14px 36px rgba(37, 99, 235, 0.28);
+}
+
+.file-picker input {
+  display: none;
+}
+
 input,
 textarea {
   width: 100%;

@@ -84,8 +84,64 @@ export default function Home() {
     setStatus("Cambios aplicados al CV.");
   }
 
-  function printPdf() {
-    window.print();
+  async function importPdf(file: File | null) {
+    if (!file) return;
+    setBusy(true);
+    setStatus("Leyendo PDF...");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch("/api/import-pdf", {
+        method: "POST",
+        body: formData
+      });
+      const data = (await response.json()) as { resume?: AppState["resume"]; error?: string; textLength?: number };
+      if (!response.ok || !data.resume) throw new Error(data.error ?? "No se pudo importar.");
+
+      setState((current) => ({
+        ...current,
+        resume: data.resume!
+      }));
+      setTab("edit");
+      setStatus(`CV importado. Texto detectado: ${data.textLength ?? 0} caracteres.`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "No se pudo subir el CV.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function exportPdf() {
+    setBusy(true);
+    setStatus("Generando PDF...");
+
+    try {
+      const response = await fetch("/api/export-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resume: state.resume })
+      });
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        throw new Error(data.error ?? "No se pudo exportar.");
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${(state.resume.fullName || "CV").replace(/[^\w-]+/g, "_") || "CV"}_ATS.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setStatus("PDF generado. Si estas en iPhone, revisa Descargas/Archivos.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "No se pudo exportar el PDF.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -148,6 +204,23 @@ export default function Home() {
             <button onClick={() => setState((current) => ({ ...current, resume: starterResume }))}>
               Cargar plantilla
             </button>
+          </div>
+
+          <div className="card">
+            <h2>Subir mi CV</h2>
+            <p>Selecciona tu PDF desde Archivos en iPhone. La app extrae el texto y llena los campos editables.</p>
+            <label className="file-picker">
+              <span>{busy ? "Procesando..." : "Seleccionar PDF"}</span>
+              <input
+                type="file"
+                accept="application/pdf,.pdf"
+                disabled={busy}
+                onChange={(event) => {
+                  void importPdf(event.target.files?.[0] ?? null);
+                  event.currentTarget.value = "";
+                }}
+              />
+            </label>
           </div>
         </section>
       )}
@@ -283,8 +356,8 @@ export default function Home() {
         <section className="stack preview-section">
           <div className="card action-card">
             <h2>Vista ATS</h2>
-            <p>Texto seleccionable, estructura limpia y lista para imprimir o guardar como PDF.</p>
-            <button onClick={printPdf}>Imprimir / PDF</button>
+            <p>Texto seleccionable, estructura limpia y PDF descargable para compartir desde el telefono.</p>
+            <button disabled={busy} onClick={exportPdf}>{busy ? "Generando..." : "Descargar PDF"}</button>
           </div>
           <ResumePreview resume={state.resume} />
         </section>
